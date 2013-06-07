@@ -49,7 +49,7 @@ def read_problem(problem_id):
     if cur is None:
         abort(404)
     else:
-        return '%s;%s' % (cur['id'], cur['description'])
+        return cur['description']
 
 @app.route('/problem/<int:problem_id>', methods=['PATCH'])
 def update_problem(problem_id):

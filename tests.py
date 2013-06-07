@@ -25,7 +25,7 @@ class BFPTestCase(unittest.TestCase):
         rv = self.app.post('/problem', data=dict(
             description=self.TEST_DESCRIPTION
         ))
-        self.assertEqual(200, rv.status_code, 'The response code should be 200')
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertTrue(rv.data, 'The response should contain data')
         problem = self.db.execute(
                 'SELECT id, description FROM problem WHERE id=?',
@@ -34,6 +34,16 @@ class BFPTestCase(unittest.TestCase):
                 'A problem should be inserted into the db')
         self.assertEqual(self.TEST_DESCRIPTION, problem['description'],
                 'The description should match in the database')
+
+    def test_read_problem(self):
+        problem_id = self.db.execute(
+                'INSERT INTO problem (description) VALUES (?)',
+                [self.TEST_DESCRIPTION]).lastrowid
+        self.db.commit()
+        rv = self.app.get('/problem/%s' % problem_id)
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        self.assertEqual(self.TEST_DESCRIPTION, rv.data,
+                'The data should contain the test description')
 
 if __name__ == '__main__':
     unittest.main()
