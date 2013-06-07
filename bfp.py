@@ -33,10 +33,11 @@ def hello():
 
 @app.route('/problem', methods=['POST'])
 def create_problem():
-    g.db.execute('INSERT INTO problem (description) VALUES (?)',
+    cur = g.db.execute('INSERT INTO problem (description) VALUES (?)',
         [request.form['description']])
     g.db.commit()
-    return ''
+
+    return str(cur.lastrowid)
 
 @app.route('/problem/<int:problem_id>', methods=['GET'])
 def read_problem(problem_id):
