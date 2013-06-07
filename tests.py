@@ -8,6 +8,7 @@ import sqlite3
 
 class BFPTestCase(unittest.TestCase):
     TEST_DESCRIPTION = 'test description'
+    NEW_TEST_DESCRIPTION = 'new %s' % TEST_DESCRIPTION
 
     def setUp(self):
         self.db_fd, bfp.app.config['DATABASE'] = tempfile.mkstemp()
@@ -44,6 +45,21 @@ class BFPTestCase(unittest.TestCase):
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertEqual(self.TEST_DESCRIPTION, rv.data,
                 'The data should contain the test description')
+
+    def test_update_problem(self):
+        problem_id = self.db.execute(
+                'INSERT INTO problem (description) VALUES (?)',
+                [self.TEST_DESCRIPTION]).lastrowid
+        self.db.commit()
+        rv = self.app.patch('/problem/%s' % problem_id, data=dict(
+            description=self.NEW_TEST_DESCRIPTION
+        ))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        problem = self.db.execute(
+                'SELECT id, description FROM problem WHERE id=?',
+                [problem_id]).fetchone()
+        self.assertEqual(self.NEW_TEST_DESCRIPTION, problem['description'],
+                'The description should match in the database')
 
 if __name__ == '__main__':
     unittest.main()
