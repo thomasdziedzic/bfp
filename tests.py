@@ -22,6 +22,13 @@ class BFPTestCase(unittest.TestCase):
         os.close(self.db_fd)
         os.unlink(bfp.app.config['DATABASE'])
 
+    def create_problem(self):
+        problem_id = self.db.execute(
+                'INSERT INTO problem (description) VALUES (?)',
+                [self.TEST_DESCRIPTION]).lastrowid
+        self.db.commit()
+        return problem_id
+
     def test_create_problem(self):
         rv = self.app.post('/problem', data=dict(
             description=self.TEST_DESCRIPTION
@@ -37,20 +44,14 @@ class BFPTestCase(unittest.TestCase):
                 'The description should match in the database')
 
     def test_read_problem(self):
-        problem_id = self.db.execute(
-                'INSERT INTO problem (description) VALUES (?)',
-                [self.TEST_DESCRIPTION]).lastrowid
-        self.db.commit()
+        problem_id = self.create_problem()
         rv = self.app.get('/problem/%s' % problem_id)
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertEqual(self.TEST_DESCRIPTION, rv.data,
                 'The data should contain the test description')
 
     def test_update_problem(self):
-        problem_id = self.db.execute(
-                'INSERT INTO problem (description) VALUES (?)',
-                [self.TEST_DESCRIPTION]).lastrowid
-        self.db.commit()
+        problem_id = self.create_problem()
         rv = self.app.patch('/problem/%s' % problem_id, data=dict(
             description=self.NEW_TEST_DESCRIPTION
         ))
@@ -62,10 +63,7 @@ class BFPTestCase(unittest.TestCase):
                 'The description should match in the database')
 
     def test_delete_problem(self):
-        problem_id = self.db.execute(
-                'INSERT INTO problem (description) VALUES (?)',
-                [self.TEST_DESCRIPTION]).lastrowid
-        self.db.commit()
+        problem_id = self.create_problem()
         rv = self.app.delete('/problem/%s' % problem_id)
         problem = self.db.execute(
                 'SELECT id, description FROM problem WHERE id=?',
