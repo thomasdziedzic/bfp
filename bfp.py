@@ -22,6 +22,7 @@ def init_db():
 @app.before_request
 def before_request():
     g.db = connect_db()
+    g.db.row_factory = sqlite3.Row
 
 @app.teardown_request
 def teardown_request(exception):
@@ -48,7 +49,7 @@ def read_problem(problem_id):
     if cur is None:
         abort(404)
     else:
-        return '%s;%s' % (cur[0], cur[1])
+        return '%s;%s' % (cur['id'], cur['description'])
 
 @app.route('/problem/<int:problem_id>', methods=['PATCH'])
 def update_problem(problem_id):
