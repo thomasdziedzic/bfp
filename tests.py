@@ -61,5 +61,16 @@ class BFPTestCase(unittest.TestCase):
         self.assertEqual(self.NEW_TEST_DESCRIPTION, problem['description'],
                 'The description should match in the database')
 
+    def test_delete_problem(self):
+        problem_id = self.db.execute(
+                'INSERT INTO problem (description) VALUES (?)',
+                [self.TEST_DESCRIPTION]).lastrowid
+        self.db.commit()
+        rv = self.app.delete('/problem/%s' % problem_id)
+        problem = self.db.execute(
+                'SELECT id, description FROM problem WHERE id=?',
+                [problem_id]).fetchone()
+        self.assertIsNone(problem, 'The problem should be deleted')
+
 if __name__ == '__main__':
     unittest.main()
