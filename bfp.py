@@ -128,5 +128,30 @@ def delete_idea(idea_id):
     g.db.commit()
     return ''
 
+@app.route('/problemidea/<int:problem_id>/<int:idea_id>', methods=['POST'])
+def create_problemidea(problem_id, idea_id):
+    existing_problemideas = g.db.execute('''
+        SELECT id
+        FROM problemidea
+        WHERE problem_id=?
+        AND idea_id=?
+        ''', [problem_id, idea_id]).fetchall()
+
+    if(len(existing_problemideas) == 0):
+        g.db.execute(
+                'INSERT INTO problemidea (problem_id, idea_id) VALUES (?, ?)',
+                [problem_id, idea_id])
+        g.db.commit()
+
+    return ''
+
+@app.route('/problemidea/<int:problem_id>/<int:idea_id>', methods=['DELETE'])
+def delete_problemidea(problem_id, idea_id):
+    g.db.execute(
+            'DELETE FROM problemidea WHERE problem_id=? AND idea_id=?',
+            [problem_id, idea_id])
+    g.db.commit()
+    return ''
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

@@ -192,5 +192,63 @@ class BFPTestCase(unittest.TestCase):
                 [idea_id]).fetchone()
         self.assertIsNone(idea, 'The idea should be deleted')
 
+    def test_create_problemidea(self):
+        idea_id = self.create_idea()
+        problem_id = self.create_problem()
+        rv = self.app.post('/problemidea/%s/%s' % (problem_id, idea_id))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        problemideas = self.db.execute('''
+            SELECT id
+            FROM problemidea
+            WHERE problem_id=?
+            AND idea_id=?
+            ''', [problem_id, idea_id]).fetchall()
+        self.assertEqual(1, len(problemideas),
+                'There should be 1 problemidea created')
+
+    def test_create_existing_problemidea(self):
+        idea_id = self.create_idea()
+        problem_id = self.create_problem()
+        problemidea_id = self.create_problemidea(problem_id, idea_id)
+        rv = self.app.post('/problemidea/%s/%s' % (problem_id, idea_id))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        problemideas = self.db.execute('''
+            SELECT id
+            FROM problemidea
+            WHERE problem_id=?
+            AND idea_id=?
+            ''', [problem_id, idea_id]).fetchall()
+        self.assertEqual(1, len(problemideas),
+                'There should be only 1 problemidea')
+
+    def test_delete_problemidea(self):
+        idea_id = self.create_idea()
+        problem_id = self.create_problem()
+        problemidea_id = self.create_problemidea(problem_id, idea_id)
+        rv = self.app.delete('/problemidea/%s/%s' % (problem_id, idea_id))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        problemideas = self.db.execute('''
+            SELECT id
+            FROM problemidea
+            WHERE problem_id=?
+            AND idea_id=?
+            ''', [problem_id, idea_id]).fetchall()
+        self.assertEqual(0, len(problemideas),
+                'The problemidea should be deleted')
+
+    def test_delete_non_existing_problemidea(self):
+        idea_id = self.create_idea()
+        problem_id = self.create_problem()
+        rv = self.app.delete('/problemidea/%s/%s' % (problem_id, idea_id))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        problemideas = self.db.execute('''
+            SELECT id
+            FROM problemidea
+            WHERE problem_id=?
+            AND idea_id=?
+            ''', [problem_id, idea_id]).fetchall()
+        self.assertEqual(0, len(problemideas),
+                'There should be no problemideas')
+
 if __name__ == '__main__':
     unittest.main()
