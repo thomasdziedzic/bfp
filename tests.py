@@ -55,12 +55,12 @@ class BFPTestCase(unittest.TestCase):
         resp_dict = json.loads(rv.data)
         self.assertEqual(type(resp_dict), dict,
                 'Response body should be a json dict')
-        self.assertIn('problem_id', resp_dict,
+        self.assertIn('id', resp_dict,
                 'The problem id should be returned with the response')
 
         problem = self.db.execute(
                 'SELECT id, description FROM problem WHERE id=?',
-                [resp_dict['problem_id']]).fetchone()
+                [resp_dict['id']]).fetchone()
         self.assertIsNotNone(problem,
                 'A problem should be inserted into the db')
         self.assertEqual(self.TEST_DESCRIPTION, problem['description'],

@@ -43,7 +43,7 @@ def create_problem():
     g.db.commit()
 
     return json.dumps(dict(
-        problem_id=cur.lastrowid
+        id=cur.lastrowid
     ))
 
 @app.route('/problem/<int:problem_id>', methods=['GET'])
