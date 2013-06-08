@@ -65,6 +65,10 @@ class BFPTestCase(unittest.TestCase):
         self.assertEqual(self.TEST_DESCRIPTION, resp_dict['description'],
                 'The data should contain the test description')
 
+    def test_read_problem_does_not_exist(self):
+        rv = self.app.get('/problem/1')
+        self.assertEqual(404, rv.status_code, 'The problem should not be found')
+
     def test_update_problem(self):
         problem_id = self.create_problem()
         rv = self.app.patch('/problem/%s' % problem_id, data=json.dumps(dict(
