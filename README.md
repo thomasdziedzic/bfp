@@ -10,13 +10,6 @@ Routes
 	</tr>
 
 	<tr>
-		<td>/</td>
-		<td>GET</td>
-		<td></td>
-		<td></td>
-	</tr>
-
-	<tr>
 		<td>/problem</td>
 		<td>POST</td>
 		<td>{"description": "problem"}</td>
