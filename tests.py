@@ -8,10 +8,10 @@ import sqlite3
 import json
 
 class BFPTestCase(unittest.TestCase):
-    TEST_DESCRIPTION = 'test description'
-    NEW_TEST_DESCRIPTION = 'new %s' % TEST_DESCRIPTION
-    OTHER_DESCRIPTION = 'other description'
-    NEW_OTHER_DESCRIPTION = 'new %s' % OTHER_DESCRIPTION
+    PROBLEM_DESCRIPTION = 'test description'
+    NEW_PROBLEM_DESCRIPTION = 'new %s' % PROBLEM_DESCRIPTION
+    IDEA_DESCRIPTION = 'other description'
+    NEW_IDEA_DESCRIPTION = 'new %s' % IDEA_DESCRIPTION
 
     def setUp(self):
         self.db_fd, bfp.app.config['DATABASE'] = tempfile.mkstemp()
@@ -28,14 +28,14 @@ class BFPTestCase(unittest.TestCase):
     def create_problem(self):
         problem_id = self.db.execute(
                 'INSERT INTO problem (description) VALUES (?)',
-                [self.TEST_DESCRIPTION]).lastrowid
+                [self.PROBLEM_DESCRIPTION]).lastrowid
         self.db.commit()
         return problem_id
 
     def create_idea(self):
         idea_id = self.db.execute(
                 'INSERT INTO idea (description) VALUES (?)',
-                [self.OTHER_DESCRIPTION]).lastrowid
+                [self.IDEA_DESCRIPTION]).lastrowid
         self.db.commit()
         return idea_id
 
@@ -48,7 +48,7 @@ class BFPTestCase(unittest.TestCase):
 
     def test_create_problem(self):
         rv = self.app.post('/problem', data=json.dumps(dict(
-            description=self.TEST_DESCRIPTION
+            description=self.PROBLEM_DESCRIPTION
         )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertTrue(rv.data, 'The response should contain data')
@@ -64,7 +64,7 @@ class BFPTestCase(unittest.TestCase):
                 [resp_dict['id']]).fetchone()
         self.assertIsNotNone(problem,
                 'A problem should be inserted into the db')
-        self.assertEqual(self.TEST_DESCRIPTION, problem['description'],
+        self.assertEqual(self.PROBLEM_DESCRIPTION, problem['description'],
                 'The description should match in the database')
 
     def test_read_problem(self):
@@ -79,7 +79,7 @@ class BFPTestCase(unittest.TestCase):
                 'Response body should be a json dict')
         self.assertIn('description', resp_dict,
                 'The description should be returned with the response')
-        self.assertEqual(self.TEST_DESCRIPTION, resp_dict['description'],
+        self.assertEqual(self.PROBLEM_DESCRIPTION, resp_dict['description'],
                 'The data should contain the test description')
         self.assertIn('ideas', resp_dict,
                 'The ideas related to the problem should be sent')
@@ -91,7 +91,7 @@ class BFPTestCase(unittest.TestCase):
         self.assertIn('id', idea, 'The id should be returned')
         self.assertEqual(idea_id, idea['id'], 'The idea id should match')
         self.assertIn('description', idea, 'The description should be returned')
-        self.assertEqual(self.OTHER_DESCRIPTION, idea['description'],
+        self.assertEqual(self.IDEA_DESCRIPTION, idea['description'],
                 'The idea description should match')
 
     def test_read_problem_does_not_exist(self):
@@ -101,13 +101,13 @@ class BFPTestCase(unittest.TestCase):
     def test_update_problem(self):
         problem_id = self.create_problem()
         rv = self.app.patch('/problem/%s' % problem_id, data=json.dumps(dict(
-            description=self.NEW_TEST_DESCRIPTION
+            description=self.NEW_PROBLEM_DESCRIPTION
         )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         problem = self.db.execute(
                 'SELECT id, description FROM problem WHERE id=?',
                 [problem_id]).fetchone()
-        self.assertEqual(self.NEW_TEST_DESCRIPTION, problem['description'],
+        self.assertEqual(self.NEW_PROBLEM_DESCRIPTION, problem['description'],
                 'The description should match in the database')
 
     def test_delete_problem(self):
@@ -120,7 +120,7 @@ class BFPTestCase(unittest.TestCase):
 
     def test_create_idea(self):
         rv = self.app.post('/idea', data=json.dumps(dict(
-            description=self.TEST_DESCRIPTION
+            description=self.IDEA_DESCRIPTION
         )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertTrue(rv.data, 'The response should contain data')
@@ -136,7 +136,7 @@ class BFPTestCase(unittest.TestCase):
                 [resp_dict['id']]).fetchone()
         self.assertIsNotNone(idea,
                 'An idea should be inserted into the db')
-        self.assertEqual(self.TEST_DESCRIPTION, idea['description'],
+        self.assertEqual(self.IDEA_DESCRIPTION, idea['description'],
                 'The description should match in the database')
 
     def test_read_idea(self):
@@ -151,7 +151,7 @@ class BFPTestCase(unittest.TestCase):
                 'Response body should be a json dict')
         self.assertIn('description', resp_dict,
                 'The description should be returned with the response')
-        self.assertEqual(self.OTHER_DESCRIPTION, resp_dict['description'],
+        self.assertEqual(self.IDEA_DESCRIPTION, resp_dict['description'],
                 'The data should contain the test description')
         self.assertIn('problems', resp_dict,
                 'The problems related to the idea should be sent')
@@ -165,7 +165,7 @@ class BFPTestCase(unittest.TestCase):
                 'The problem id should match')
         self.assertIn('description', problem,
                 'The description should be returned')
-        self.assertEqual(self.TEST_DESCRIPTION, problem['description'],
+        self.assertEqual(self.PROBLEM_DESCRIPTION, problem['description'],
                 'The problem description should match')
 
     def test_read_idea_does_not_exist(self):
@@ -175,13 +175,13 @@ class BFPTestCase(unittest.TestCase):
     def test_update_idea(self):
         idea_id = self.create_idea()
         rv = self.app.patch('/idea/%s' % idea_id, data=json.dumps(dict(
-            description=self.NEW_OTHER_DESCRIPTION
+            description=self.NEW_IDEA_DESCRIPTION
         )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         idea = self.db.execute(
                 'SELECT id, description FROM idea WHERE id=?',
                 [idea_id]).fetchone()
-        self.assertEqual(self.NEW_OTHER_DESCRIPTION, idea['description'],
+        self.assertEqual(self.NEW_IDEA_DESCRIPTION, idea['description'],
                 'The description should match in the database')
 
     def test_delete_idea(self):
