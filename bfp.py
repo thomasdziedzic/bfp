@@ -29,12 +29,6 @@ def before_request():
 def teardown_request(exception):
     g.db.close()
 
-@app.route('/')
-def hello():
-    return json.dumps(dict(
-        body='Hello World!'
-    ))
-
 @app.route('/problem', methods=['POST'])
 def create_problem():
     req_dict = json.loads(request.data)
