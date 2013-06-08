@@ -45,7 +45,7 @@ Routes
 		<td>/idea</td>
 		<td>POST</td>
 		<td>{"description": "test"}</td>
-		<td>{"idea_id": 1}</td>
+		<td>{"id": 1}</td>
 	</tr>
 	<tr>
 		<td>/idea/:id</td>
