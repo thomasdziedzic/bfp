@@ -1,6 +1,9 @@
 Routes
 ======
 
+Problem Routes
+--------------
+
 <table>
 	<tr>
 		<th>Route</th>
@@ -8,7 +11,6 @@ Routes
 		<th>Example Request</th>
 		<th>Example Response</th>
 	</tr>
-
 	<tr>
 		<td>/problem</td>
 		<td>POST</td>
@@ -34,7 +36,18 @@ Routes
 		<td></td>
 		<td></td>
 	</tr>
+</table>
 
+Idea Routes
+--------------
+
+<table>
+	<tr>
+		<th>Route</th>
+		<th>HTTP Method</th>
+		<th>Example Request</th>
+		<th>Example Response</th>
+	</tr>
 	<tr>
 		<td>/idea</td>
 		<td>POST</td>
@@ -60,7 +73,18 @@ Routes
 		<td></td>
 		<td></td>
 	</tr>
+</table>
 
+ProblemIdea Routes
+--------------
+
+<table>
+	<tr>
+		<th>Route</th>
+		<th>HTTP Method</th>
+		<th>Example Request</th>
+		<th>Example Response</th>
+	</tr>
 	<tr>
 		<td>/problemidea/:problem_id/:idea_id</td>
 		<td>POST</td>
@@ -74,4 +98,3 @@ Routes
 		<td></td>
 	</tr>
 </table>
-
