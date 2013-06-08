@@ -5,10 +5,12 @@ import bfp
 import unittest
 import tempfile
 import sqlite3
+import json
 
 class BFPTestCase(unittest.TestCase):
     TEST_DESCRIPTION = 'test description'
     NEW_TEST_DESCRIPTION = 'new %s' % TEST_DESCRIPTION
+    OTHER_DESCRIPTION = 'other description'
 
     def setUp(self):
         self.db_fd, bfp.app.config['DATABASE'] = tempfile.mkstemp()
@@ -35,9 +37,16 @@ class BFPTestCase(unittest.TestCase):
         ))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertTrue(rv.data, 'The response should contain data')
+
+        resp_dict = json.loads(rv.data)
+        self.assertEqual(type(resp_dict), dict,
+                'Response body should be a json dict')
+        self.assertIn('problem_id', resp_dict,
+                'The problem id should be returned with the response')
+
         problem = self.db.execute(
                 'SELECT id, description FROM problem WHERE id=?',
-                [rv.data]).fetchone()
+                [resp_dict['problem_id']]).fetchone()
         self.assertIsNotNone(problem,
                 'A problem should be inserted into the db')
         self.assertEqual(self.TEST_DESCRIPTION, problem['description'],
@@ -47,14 +56,20 @@ class BFPTestCase(unittest.TestCase):
         problem_id = self.create_problem()
         rv = self.app.get('/problem/%s' % problem_id)
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
-        self.assertEqual(self.TEST_DESCRIPTION, rv.data,
+
+        resp_dict = json.loads(rv.data)
+        self.assertEqual(type(resp_dict), dict,
+                'Response body should be a json dict')
+        self.assertIn('description', resp_dict,
+                'The description should be returned with the response')
+        self.assertEqual(self.TEST_DESCRIPTION, resp_dict['description'],
                 'The data should contain the test description')
 
     def test_update_problem(self):
         problem_id = self.create_problem()
-        rv = self.app.patch('/problem/%s' % problem_id, data=dict(
+        rv = self.app.patch('/problem/%s' % problem_id, data=json.dumps(dict(
             description=self.NEW_TEST_DESCRIPTION
-        ))
+        )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         problem = self.db.execute(
                 'SELECT id, description FROM problem WHERE id=?',

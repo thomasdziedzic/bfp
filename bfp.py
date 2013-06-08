@@ -3,6 +3,7 @@
 import sqlite3
 from flask import Flask, g, request, abort
 from contextlib import closing
+import json
 
 DATABASE = '/tmp/bfp.db'
 DEBUG = True
@@ -30,7 +31,9 @@ def teardown_request(exception):
 
 @app.route('/')
 def hello():
-    return 'Hello World!'
+    return json.dumps(dict(
+        body='Hello World!'
+    ))
 
 @app.route('/problem', methods=['POST'])
 def create_problem():
@@ -38,7 +41,9 @@ def create_problem():
         [request.form['description']])
     g.db.commit()
 
-    return str(cur.lastrowid)
+    return json.dumps(dict(
+        problem_id=cur.lastrowid
+    ))
 
 @app.route('/problem/<int:problem_id>', methods=['GET'])
 def read_problem(problem_id):
@@ -49,12 +54,15 @@ def read_problem(problem_id):
     if cur is None:
         abort(404)
     else:
-        return cur['description']
+        return json.dumps(dict(
+            description=cur['description']
+        ))
 
 @app.route('/problem/<int:problem_id>', methods=['PATCH'])
 def update_problem(problem_id):
+    req_dict = json.loads(request.data)
     g.db.execute('UPDATE problem SET description=? WHERE id=?',
-            [request.form['description'], problem_id])
+            [req_dict['description'], problem_id])
     g.db.commit()
     return ''
 
