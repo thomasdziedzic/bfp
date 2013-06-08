@@ -31,6 +31,20 @@ class BFPTestCase(unittest.TestCase):
         self.db.commit()
         return problem_id
 
+    def create_idea(self):
+        idea_id = self.db.execute(
+                'INSERT INTO idea (description) VALUES (?)',
+                [self.OTHER_DESCRIPTION]).lastrowid
+        self.db.commit()
+        return idea_id
+
+    def create_problemidea(self, problem_id, idea_id):
+        problemidea_id = self.db.execute(
+                'INSERT INTO problemidea (problem_id, idea_id) VALUES (?, ?)',
+                [problem_id, idea_id]).lastrowid
+        self.db.commit()
+        return problemidea_id
+
     def test_create_problem(self):
         rv = self.app.post('/problem', data=json.dumps(dict(
             description=self.TEST_DESCRIPTION
@@ -54,6 +68,8 @@ class BFPTestCase(unittest.TestCase):
 
     def test_read_problem(self):
         problem_id = self.create_problem()
+        idea_id = self.create_idea()
+        problemidea_id = self.create_problemidea(problem_id, idea_id)
         rv = self.app.get('/problem/%s' % problem_id)
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
 
@@ -64,6 +80,18 @@ class BFPTestCase(unittest.TestCase):
                 'The description should be returned with the response')
         self.assertEqual(self.TEST_DESCRIPTION, resp_dict['description'],
                 'The data should contain the test description')
+        self.assertIn('ideas', resp_dict,
+                'The ideas related to the problem should be sent')
+        ideas = resp_dict['ideas']
+        self.assertEqual(type(ideas), list, 'The ideas should be a list')
+        self.assertEqual(len(ideas), 1, 'There should be 1 idea')
+        idea = ideas[0]
+        self.assertEqual(type(idea), dict, 'The idea should be a dict')
+        self.assertIn('id', idea, 'The id should be returned')
+        self.assertEqual(idea_id, idea['id'], 'The idea id should match')
+        self.assertIn('description', idea, 'The description should be returned')
+        self.assertEqual(self.OTHER_DESCRIPTION, idea['description'],
+                'The idea description should match')
 
     def test_read_problem_does_not_exist(self):
         rv = self.app.get('/problem/1')

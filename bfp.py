@@ -51,12 +51,23 @@ def read_problem(problem_id):
     cur = g.db.execute('SELECT id, description FROM problem WHERE id=?',
         [problem_id]).fetchone()
 
+    idea_rows = g.db.execute('''
+        SELECT i.id, i.description
+        FROM problemidea as pi
+        INNER JOIN idea AS i
+        ON pi.idea_id = i.Id
+        WHERE pi.problem_id=?
+        ''', [problem_id]).fetchall()
+    ideas = [{'id': idea_row['id'], 'description': idea_row['description']}
+            for idea_row in idea_rows]
+
     # if it doesn't exist then 404
     if cur is None:
         abort(404)
     else:
         return json.dumps(dict(
-            description=cur['description']
+            description=cur['description'],
+            ideas=ideas
         ))
 
 @app.route('/problem/<int:problem_id>', methods=['PATCH'])
