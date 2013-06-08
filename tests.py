@@ -11,6 +11,7 @@ class BFPTestCase(unittest.TestCase):
     TEST_DESCRIPTION = 'test description'
     NEW_TEST_DESCRIPTION = 'new %s' % TEST_DESCRIPTION
     OTHER_DESCRIPTION = 'other description'
+    NEW_OTHER_DESCRIPTION = 'new %s' % OTHER_DESCRIPTION
 
     def setUp(self):
         self.db_fd, bfp.app.config['DATABASE'] = tempfile.mkstemp()
@@ -116,6 +117,80 @@ class BFPTestCase(unittest.TestCase):
                 'SELECT id, description FROM problem WHERE id=?',
                 [problem_id]).fetchone()
         self.assertIsNone(problem, 'The problem should be deleted')
+
+    def test_create_idea(self):
+        rv = self.app.post('/idea', data=json.dumps(dict(
+            description=self.TEST_DESCRIPTION
+        )))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        self.assertTrue(rv.data, 'The response should contain data')
+
+        resp_dict = json.loads(rv.data)
+        self.assertEqual(type(resp_dict), dict,
+                'Response body should be a json dict')
+        self.assertIn('id', resp_dict,
+                'The idea id should be returned with the response')
+
+        idea = self.db.execute(
+                'SELECT id, description FROM idea WHERE id=?',
+                [resp_dict['id']]).fetchone()
+        self.assertIsNotNone(idea,
+                'An idea should be inserted into the db')
+        self.assertEqual(self.TEST_DESCRIPTION, idea['description'],
+                'The description should match in the database')
+
+    def test_read_idea(self):
+        idea_id = self.create_idea()
+        problem_id = self.create_problem()
+        problemidea_id = self.create_problemidea(problem_id, idea_id)
+        rv = self.app.get('/idea/%s' % idea_id)
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+
+        resp_dict = json.loads(rv.data)
+        self.assertEqual(type(resp_dict), dict,
+                'Response body should be a json dict')
+        self.assertIn('description', resp_dict,
+                'The description should be returned with the response')
+        self.assertEqual(self.OTHER_DESCRIPTION, resp_dict['description'],
+                'The data should contain the test description')
+        self.assertIn('problems', resp_dict,
+                'The problems related to the idea should be sent')
+        problems = resp_dict['problems']
+        self.assertEqual(type(problems), list, 'The problems should be a list')
+        self.assertEqual(len(problems), 1, 'There should be 1 problem')
+        problem = problems[0]
+        self.assertEqual(type(problem), dict, 'The problem should be a dict')
+        self.assertIn('id', problem, 'The id should be returned')
+        self.assertEqual(problem_id, problem['id'],
+                'The problem id should match')
+        self.assertIn('description', problem,
+                'The description should be returned')
+        self.assertEqual(self.TEST_DESCRIPTION, problem['description'],
+                'The problem description should match')
+
+    def test_read_idea_does_not_exist(self):
+        rv = self.app.get('/idea/1')
+        self.assertEqual(404, rv.status_code, 'The idea should not be found')
+
+    def test_update_idea(self):
+        idea_id = self.create_idea()
+        rv = self.app.patch('/idea/%s' % idea_id, data=json.dumps(dict(
+            description=self.NEW_OTHER_DESCRIPTION
+        )))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        idea = self.db.execute(
+                'SELECT id, description FROM idea WHERE id=?',
+                [idea_id]).fetchone()
+        self.assertEqual(self.NEW_OTHER_DESCRIPTION, idea['description'],
+                'The description should match in the database')
+
+    def test_delete_idea(self):
+        idea_id = self.create_idea()
+        rv = self.app.delete('/idea/%s' % idea_id)
+        idea = self.db.execute(
+                'SELECT id, description FROM idea WHERE id=?',
+                [idea_id]).fetchone()
+        self.assertIsNone(idea, 'The idea should be deleted')
 
 if __name__ == '__main__':
     unittest.main()

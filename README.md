@@ -40,5 +40,30 @@ Routes
 		<td></td>
 		<td></td>
 	</tr>
+
+	<tr>
+		<td>/idea</td>
+		<td>POST</td>
+		<td>{"description": "test"}</td>
+		<td>{"idea_id": 1}</td>
+	</tr>
+	<tr>
+		<td>/idea/:id</td>
+		<td>GET</td>
+		<td></td>
+		<td>{"problems": [], "description": "test"}</td>
+	</tr>
+	<tr>
+		<td>/idea/:id</td>
+		<td>PATCH</td>
+		<td>{"description": "another description"}</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>/idea/:id</td>
+		<td>DELETE</td>
+		<td></td>
+		<td></td>
+	</tr>
 </table>
 
