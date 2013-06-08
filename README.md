@@ -20,7 +20,7 @@ Routes
 		<td>/problem</td>
 		<td>POST</td>
 		<td>{"description": "test"}</td>
-		<td>{"problem_id": 1}</td>
+		<td>{"id": 1}</td>
 	</tr>
 	<tr>
 		<td>/problem/:id</td>
