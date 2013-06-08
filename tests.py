@@ -46,6 +46,20 @@ class BFPTestCase(unittest.TestCase):
         self.db.commit()
         return problemidea_id
 
+    def create_problem_with_description(self, description):
+        problem_id = self.db.execute(
+                'INSERT INTO problem (description) VALUES (?)',
+                [description]).lastrowid
+        self.db.commit()
+        return problem_id
+
+    def create_idea_with_description(self, description):
+        idea_id = self.db.execute(
+                'INSERT INTO idea (description) VALUES (?)',
+                [description]).lastrowid
+        self.db.commit()
+        return idea_id
+
     def test_create_problem(self):
         rv = self.app.post('/problem', data=json.dumps(dict(
             description=self.PROBLEM_DESCRIPTION
@@ -249,6 +263,40 @@ class BFPTestCase(unittest.TestCase):
             ''', [problem_id, idea_id]).fetchall()
         self.assertEqual(0, len(problemideas),
                 'There should be no problemideas')
+
+    def test_search_problems(self):
+        SEARCH_DESCRIPTION = 'too hot'
+        problem_id = self.create_problem_with_description(SEARCH_DESCRIPTION)
+        self.create_problem_with_description('too cold')
+        rv = self.app.post('/search/problems', data=json.dumps(dict(
+            query='hot'
+        )))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        problems = json.loads(rv.data)
+        self.assertEqual(type(problems), list, 'Problems should be a list')
+        self.assertEqual(1, len(problems), 'There should be 1 problem')
+        problem = problems[0]
+        self.assertEqual(problem_id, problem['id'],
+                'The hot problem should be returned')
+        self.assertEqual(SEARCH_DESCRIPTION, problem['description'],
+                'The hot problem description should be returned')
+
+    def test_search_ideas(self):
+        SEARCH_DESCRIPTION = 'too hot'
+        idea_id = self.create_idea_with_description(SEARCH_DESCRIPTION)
+        self.create_idea_with_description('too cold')
+        rv = self.app.post('/search/ideas', data=json.dumps(dict(
+            query='hot'
+        )))
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+        ideas = json.loads(rv.data)
+        self.assertEqual(type(ideas), list, 'ideas should be a list')
+        self.assertEqual(1, len(ideas), 'There should be 1 idea')
+        idea = ideas[0]
+        self.assertEqual(idea_id, idea['id'],
+                'The hot idea should be returned')
+        self.assertEqual(SEARCH_DESCRIPTION, idea['description'],
+                'The hot idea description should be returned')
 
 if __name__ == '__main__':
     unittest.main()

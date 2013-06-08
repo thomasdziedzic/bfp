@@ -98,3 +98,27 @@ ProblemIdea Routes
 		<td></td>
 	</tr>
 </table>
+
+Search Routes
+--------------
+
+<table>
+	<tr>
+		<th>Route</th>
+		<th>HTTP Method</th>
+		<th>Example Request</th>
+		<th>Example Response</th>
+	</tr>
+	<tr>
+		<td>/search/problems</td>
+		<td>POST</td>
+		<td>{"query": "problem"}</td>
+		<td>[{"id": 1, "description": "problem"}]</td>
+	</tr>
+	<tr>
+		<td>/search/ideas</td>
+		<td>POST</td>
+		<td>{"query": "idea"}</td>
+		<td>[{"id": 1, "description": "idea"}]</td>
+	</tr>
+</table>

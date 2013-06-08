@@ -153,5 +153,31 @@ def delete_problemidea(problem_id, idea_id):
     g.db.commit()
     return ''
 
+@app.route('/search/problems', methods=['POST'])
+def search_problems():
+    query = json.loads(request.data)['query']
+    problem_rows = g.db.execute('''
+        SELECT id, description
+        FROM problem
+        WHERE description LIKE '%' || ? || '%'
+        ''', [query]).fetchall()
+    problems = [{'id': problem_row['id'],
+            'description': problem_row['description']}
+            for problem_row in problem_rows]
+    return json.dumps(problems)
+
+@app.route('/search/ideas', methods=['POST'])
+def search_ideas():
+    query = json.loads(request.data)['query']
+    idea_rows = g.db.execute('''
+        SELECT id, description
+        FROM idea
+        WHERE description LIKE '%' || ? || '%'
+        ''', [query]).fetchall()
+    ideas = [{'id': idea_row['id'],
+            'description': idea_row['description']}
+            for idea_row in idea_rows]
+    return json.dumps(ideas)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
