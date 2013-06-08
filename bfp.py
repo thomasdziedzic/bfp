@@ -37,8 +37,9 @@ def hello():
 
 @app.route('/problem', methods=['POST'])
 def create_problem():
+    req_dict = json.loads(request.data)
     cur = g.db.execute('INSERT INTO problem (description) VALUES (?)',
-        [request.form['description']])
+        [req_dict['description']])
     g.db.commit()
 
     return json.dumps(dict(

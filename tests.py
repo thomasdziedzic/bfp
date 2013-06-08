@@ -32,9 +32,9 @@ class BFPTestCase(unittest.TestCase):
         return problem_id
 
     def test_create_problem(self):
-        rv = self.app.post('/problem', data=dict(
+        rv = self.app.post('/problem', data=json.dumps(dict(
             description=self.TEST_DESCRIPTION
-        ))
+        )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
         self.assertTrue(rv.data, 'The response should contain data')
 
