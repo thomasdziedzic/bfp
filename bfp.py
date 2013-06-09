@@ -40,6 +40,17 @@ def create_problem():
         id=cur.lastrowid
     ))
 
+@app.route('/problems', methods=['GET'])
+def read_problems():
+    problem_rows = g.db.execute(
+            'SELECT id, description FROM problem').fetchall()
+
+    problems = [{'id': problem_row['id'],
+            'description': problem_row['description']}
+            for problem_row in problem_rows]
+
+    return json.dumps(problems)
+
 @app.route('/problem/<int:problem_id>', methods=['GET'])
 def read_problem(problem_id):
     cur = g.db.execute('SELECT id, description FROM problem WHERE id=?',
