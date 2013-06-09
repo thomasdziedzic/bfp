@@ -18,6 +18,12 @@ Problem Routes
 		<td>{"id": 1}</td>
 	</tr>
 	<tr>
+		<td>/problems</td>
+		<td>GET</td>
+		<td></td>
+		<td>[{"id": 1, "description": "problem"}]</td>
+	</tr>
+	<tr>
 		<td>/problem/:id</td>
 		<td>GET</td>
 		<td></td>
@@ -53,6 +59,12 @@ Idea Routes
 		<td>POST</td>
 		<td>{"description": "idea"}</td>
 		<td>{"id": 1}</td>
+	</tr>
+	<tr>
+		<td>/ideas</td>
+		<td>GET</td>
+		<td></td>
+		<td>[{"id": 1, "description": "idea"}]</td>
 	</tr>
 	<tr>
 		<td>/idea/:id</td>
