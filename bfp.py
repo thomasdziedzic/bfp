@@ -100,6 +100,15 @@ def create_idea():
         id=cur.lastrowid
     ))
 
+@app.route('/ideas', methods=['GET'])
+def read_ideas():
+    idea_rows = g.db.execute('SELECT id, description FROM idea').fetchall()
+
+    ideas = [{'id': idea_row['id'], 'description': idea_row['description']}
+            for idea_row in idea_rows]
+
+    return json.dumps(ideas)
+
 @app.route('/idea/<int:idea_id>', methods=['GET'])
 def read_idea(idea_id):
     cur = g.db.execute('SELECT id, description FROM idea WHERE id=?',

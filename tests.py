@@ -170,6 +170,23 @@ class BFPTestCase(unittest.TestCase):
         self.assertEqual(self.IDEA_DESCRIPTION, idea['description'],
                 'The description should match in the database')
 
+    def test_read_ideas(self):
+        idea_id = self.create_idea()
+        rv = self.app.get('/ideas')
+        self.assertEqual(200, rv.status_code, 'The http code should be 200')
+
+        resp_list = json.loads(rv.data)
+        self.assertEqual(type(resp_list), list,
+                'Response body should be a json list')
+        self.assertEqual(1, len(resp_list),
+                'There should be 1 idea in the list')
+        idea = resp_list[0]
+        self.assertEqual(type(idea), dict, 'The idea should be a dict')
+        self.assertIn('description', idea,
+                'The description should be returned with the response')
+        self.assertEqual(self.IDEA_DESCRIPTION, idea['description'],
+                'The data should contain the test description')
+
     def test_read_idea(self):
         idea_id = self.create_idea()
         problem_id = self.create_problem()
