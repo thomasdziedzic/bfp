@@ -32,7 +32,7 @@ Problem Routes
 	</tr>
 	<tr>
 		<td>/problem/:id</td>
-		<td>PATCH</td>
+		<td>PUT</td>
 		<td>{"description": "another problem"}</td>
 		<td></td>
 	</tr>
@@ -75,7 +75,7 @@ Idea Routes
 	</tr>
 	<tr>
 		<td>/idea/:id</td>
-		<td>PATCH</td>
+		<td>PUT</td>
 		<td>{"description": "another idea"}</td>
 		<td></td>
 	</tr>
