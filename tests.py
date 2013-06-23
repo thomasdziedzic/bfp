@@ -131,7 +131,7 @@ class BFPTestCase(unittest.TestCase):
 
     def test_update_problem(self):
         problem_id = self.create_problem()
-        rv = self.app.patch('/problem/%s' % problem_id, data=json.dumps(dict(
+        rv = self.app.put('/problem/%s' % problem_id, data=json.dumps(dict(
             description=self.NEW_PROBLEM_DESCRIPTION
         )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')
@@ -222,7 +222,7 @@ class BFPTestCase(unittest.TestCase):
 
     def test_update_idea(self):
         idea_id = self.create_idea()
-        rv = self.app.patch('/idea/%s' % idea_id, data=json.dumps(dict(
+        rv = self.app.put('/idea/%s' % idea_id, data=json.dumps(dict(
             description=self.NEW_IDEA_DESCRIPTION
         )))
         self.assertEqual(200, rv.status_code, 'The http code should be 200')

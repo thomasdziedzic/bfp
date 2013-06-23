@@ -75,7 +75,7 @@ def read_problem(problem_id):
             ideas=ideas
         ))
 
-@app.route('/problem/<int:problem_id>', methods=['PATCH'])
+@app.route('/problem/<int:problem_id>', methods=['PUT'])
 def update_problem(problem_id):
     req_dict = json.loads(request.data)
     g.db.execute('UPDATE problem SET description=? WHERE id=?',
@@ -134,7 +134,7 @@ def read_idea(idea_id):
             problems=problems
         ))
 
-@app.route('/idea/<int:idea_id>', methods=['PATCH'])
+@app.route('/idea/<int:idea_id>', methods=['PUT'])
 def update_idea(idea_id):
     req_dict = json.loads(request.data)
     g.db.execute('UPDATE idea SET description=? WHERE id=?',
