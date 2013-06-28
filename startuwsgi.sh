@@ -1,3 +1,3 @@
 #!/bin/sh
 
-uwsgi --http :5000 --wsgi-file bfp.py --callable app
+uwsgi --wsgi-file bfp.py --callable app -s /tmp/uwsgi.sock -C -M -A 4 -m
